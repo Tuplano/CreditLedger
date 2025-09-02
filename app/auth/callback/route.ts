@@ -11,6 +11,6 @@ export async function GET(request: Request) {
   if (code) {
     await supabase.auth.exchangeCodeForSession(code);
   }
-
-  return NextResponse.redirect(new URL("/dashboard", request.url));
+  const redirectTo = process.env.NEXT_PUBLIC_SITE_URL;
+  return NextResponse.redirect(`${redirectTo}/dashboard`);
 }
