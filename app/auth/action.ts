@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
@@ -11,11 +10,9 @@ export async function login(formData: FormData) {
   };
 
   const { error } = await supabase.auth.signInWithPassword(data);
-  if (error) {
-    return { error: error.message };
-  }
+  if (error) return { error: error.message };
 
-  redirect("/dashboard");
+  return { success: true }; // no redirect here
 }
 
 export async function signup(formData: FormData) {
@@ -32,11 +29,9 @@ export async function signup(formData: FormData) {
   };
 
   const { error } = await supabase.auth.signUp(data);
-  if (error) {
-    return { error: error.message };
-  }
+  if (error) return { error: error.message };
 
-  redirect("/dashboard");
+  return { success: true }; // no redirect here
 }
 
 export async function forgotPassword(formData: FormData) {
@@ -66,14 +61,12 @@ export async function googleSignIn() {
 
   return { url: data.url };
 }
+
 export async function logout() {
   const supabase = await createClient();
 
   const { error } = await supabase.auth.signOut();
+  if (error) return { error: error.message };
 
-  if (error) {
-    console.error("Logout error:", error.message);
-  }
-
-  redirect("/auth");
+  return { success: true }; // no redirect
 }

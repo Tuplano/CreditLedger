@@ -1,7 +1,37 @@
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowRight, DollarSign } from "lucide-react";
-import { HeaderProps } from "@/types/all";
+import { createClient } from "@/utils/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
-export default function Header({ user, onLogout }: HeaderProps) {
+const supabase = createClient();
+
+export default function Header() {
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Get initial session
+    const getSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUser(data.session?.user ?? null);
+    };
+    getSession();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    router.push("/");
+  };
+
   return (
     <header className="border-b bg-white shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
@@ -12,31 +42,10 @@ export default function Header({ user, onLogout }: HeaderProps) {
           <h1 className="text-xl font-bold text-gray-900">CreditLedger</h1>
         </div>
 
-        <nav className="hidden md:flex items-center gap-8">
-          <a
-            href="#features"
-            className="text-gray-600 hover:text-gray-900 transition"
-          >
-            Features
-          </a>
-          <a
-            href="#pricing"
-            className="text-gray-600 hover:text-gray-900 transition"
-          >
-            Pricing
-          </a>
-          <a
-            href="#about"
-            className="text-gray-600 hover:text-gray-900 transition"
-          >
-            About
-          </a>
-        </nav>
-
         <div className="flex items-center gap-3">
           {user ? (
             <button
-              onClick={onLogout}
+              onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
             >
               Logout
@@ -44,18 +53,8 @@ export default function Header({ user, onLogout }: HeaderProps) {
             </button>
           ) : (
             <div className="flex items-center gap-3">
-              <a
-                href="/login"
-                className="text-gray-600 hover:text-gray-900 transition"
-              >
-                Sign In
-              </a>
-              <a
-                href="/login"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              >
-                Get Started
-              </a>
+              <a href="/auth" className="text-gray-600 hover:text-gray-900 transition">Sign In</a>
+              <a href="/auth" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Get Started</a>
             </div>
           )}
         </div>
