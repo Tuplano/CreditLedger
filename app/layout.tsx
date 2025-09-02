@@ -8,7 +8,11 @@ export const metadata: Metadata = {
   description: "Next.js + TypeScript + Supabase Auth with Google (SSR)",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body className="min-h-dvh bg-white text-gray-900 antialiased">
@@ -27,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </form>
         </header>
 
-        <main className="mx-auto max-w-2xl p-6">{children}</main>
+        <main className="w-full p-6">{children}</main>
       </body>
     </html>
   );

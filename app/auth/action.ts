@@ -15,7 +15,6 @@ export async function login(formData: FormData) {
     return { error: error.message };
   }
 
-  // ✅ redirect after success
   redirect("/dashboard");
 }
 
@@ -37,7 +36,6 @@ export async function signup(formData: FormData) {
     return { error: error.message };
   }
 
-  // ✅ redirect after success
   redirect("/dashboard");
 }
 
@@ -60,7 +58,7 @@ export async function googleSignIn() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-redirectTo: `${window.location.origin}/auth/callback`
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
     },
   });
 
