@@ -1,3 +1,5 @@
+import type { User } from '@supabase/supabase-js';
+
 export interface InputFieldProps {
   label: string;
   name: string;
@@ -39,4 +41,10 @@ export interface StepIndicatorProps {
   icon: React.ReactNode;
   isCompleted: boolean;
   isActive: boolean;
+}
+
+
+export interface HeaderProps {
+  user: User | null;
+  onLogout: () => void;
 }
