@@ -12,19 +12,28 @@ export default function Header() {
   const router = useRouter();
 
   useEffect(() => {
-    // Get initial session
     const getSession = async () => {
       const { data } = await supabase.auth.getSession();
-      setUser(data.session?.user ?? null);
+      const currentUser = data.session?.user ?? null;
+      setUser(currentUser);
+
+      if (currentUser) {
+        router.push("/dashboard");
+      }
     };
     getSession();
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+
+      if (currentUser) {
+        router.push("/dashboard");
+      }
     });
 
     return () => listener.subscription.unsubscribe();
-  }, []);
+  }, [router]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
